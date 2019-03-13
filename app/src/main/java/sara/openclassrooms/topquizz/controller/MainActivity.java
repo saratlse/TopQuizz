@@ -1,4 +1,4 @@
-package sara.openclassrooms.topquizz;
+package sara.openclassrooms.topquizz.controller;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,12 +10,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import sara.openclassrooms.topquizz.R;
+import sara.openclassrooms.topquizz.model.User;
+
 public class MainActivity extends AppCompatActivity {
 
 
     private TextView mGreetingText;
     private EditText mNameInput;
     private Button mPlayButton;
+    private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        mUser = new User();
 
         mGreetingText = (TextView)findViewById(R.id.tvWelcome);
         mNameInput = (EditText)findViewById(R.id.etName);
@@ -53,8 +58,12 @@ public class MainActivity extends AppCompatActivity {
         mPlayButton.setOnClickListener(new View.OnClickListener() { // cette methode est appele a chaque fois que le user clique sur le bouton
             @Override
             public void onClick(View v) {
+                String firstname = mNameInput.getText().toString();//je recupere le nom
+                mUser.setFirstName(firstname);
 
-                Intent gameActivity = new Intent(MainActivity.this,GameActivity.class);
+
+
+                Intent gameActivity = new Intent(MainActivity.this, GameActivity.class);
                 startActivity(gameActivity);
 
             }
