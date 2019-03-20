@@ -29,9 +29,11 @@ public class MainActivity extends AppCompatActivity {
 
         mUser = new User();
 
+
         mGreetingText = (TextView)findViewById(R.id.tvWelcome);
         mNameInput = (EditText)findViewById(R.id.etName);
         mPlayButton = (Button)findViewById(R.id.btnPlay);
+
 
 
         mPlayButton.setEnabled(false);//je desactive le bouton
