@@ -14,11 +14,15 @@
 
 package sara.openclassrooms.topquizz.controller;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -39,9 +43,18 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     private Button mButton4;
 
 
+
+
     //on implemente le modele
     private QuestionBank mQuestionBank;
     private Question mCurrentQuestion;
+
+    private int mNumberOfQuestions;
+    private int mScore;
+    public static final String BUNDLE_EXTRA_SCORE = "BUNDLE_EXTRA_SCORE";
+
+
+
 
 
 
@@ -51,6 +64,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_game);
 
         mQuestionBank = this.generateQuestions(); //on cree une methode generateQuestions
+
+        mNumberOfQuestions = 4; //le jeu s'arrete apres 4 questions
+        mScore = 0; // j initialise la variable score a zero
+        mNumberOfQuestions = 4;
 
 
         //widgets
@@ -68,8 +85,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         mButton3.setTag(2);
         mButton4.setTag(3);
 
+        mButton1.setOnClickListener(this);
+        mButton2.setOnClickListener(this);
+        mButton3.setOnClickListener(this);
+        mButton4.setOnClickListener(this);
+
         mCurrentQuestion = mQuestionBank.getQuestion();
-        this.displayQuestion(mCurrentQuestion);}
+        this.displayQuestion(mCurrentQuestion);
+    }
 
 
 
@@ -77,23 +100,58 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onClick(View v) {
 
+            int  responseIndex  = (int)v.getTag();//je cree une variable int reponse
+
+            if (responseIndex == mCurrentQuestion.getAnswerIndex()) {
+                Toast.makeText(this,"Correct",Toast.LENGTH_SHORT).show();
+                mScore ++; //j'incremente de 1 a chaque bonne reponse
+
+            } else {
+                Toast.makeText(this, "Wrong Answer!",Toast.LENGTH_SHORT).show();
+            }
+            if (--mNumberOfQuestions == 0){
+                endGame();
+            }else {
+                mCurrentQuestion = mQuestionBank.getQuestion();
+                displayQuestion(mCurrentQuestion);
+            }
+
         }
 
+    private void endGame() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+        builder.setTitle("Well done !")
+                .setMessage("Your score is " + mScore)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(); //je cree un intent en utilisant le constructeur par defaut
+                        intent.putExtra(BUNDLE_EXTRA_SCORE, mScore);//pour mettre la valeur dans l'intent j'utilise la methode PUTEXTRA
+                        //PUTEXTRA prend en parametre le score et on lui associe un identifiant BUndle
+                        setResult(RESULT_OK,intent);//on appel la methode setREsult popur enregistrer l'intent aupres d'android
+                        // et l'envoyer le resultat a la mainActivity
+                        finish();
+
+                    }
+                })
+                .create()
+                .show();
+
+    }
 
 
     //la methode displayQuestion prend en parametre une question et met a jour
     //les differents champs de l'interface graphique
     private void displayQuestion (final Question question){
         mQuestion.setText(question.getQuestion());
-        mButton1.setTag(question.getChoiceList().get(0));
-        mButton2.setTag(question.getChoiceList().get(1));
-        mButton3.setTag(question.getChoiceList().get(2));
-        mButton4.setTag(question.getChoiceList().get(3));
-
-
+        mButton1.setText(question.getChoiceList().get(0));//identifiant 0
+        mButton2.setText(question.getChoiceList().get(1));
+        mButton3.setText(question.getChoiceList().get(2));
+        mButton4.setText(question.getChoiceList().get(3));
 
     }
+
 
 
     private QuestionBank generateQuestions() {
